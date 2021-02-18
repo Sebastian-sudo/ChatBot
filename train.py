@@ -61,14 +61,14 @@ class dataset(Dataset):
 dataset = dataset()
 train_loader = DataLoader(dataset=dataset, batch_size=10, shuffle=True, num_workers=2)
 
-input_size, hidden_size, output_size = len(X_train[0]), 128, len(tags)
+input_size, hidden_size, output_size = len(X_train[0]), 512, len(tags)
 
 model = Net(input_size, hidden_size, output_size).to(device)
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-for epoch in range(2000):
+for epoch in range(700):
 	for (words, labels) in train_loader:
 		words = words.to(device)
 		labels = labels.to(device)
@@ -94,7 +94,7 @@ data = {
 	"tags": tags,
 }
 
-file = "data.pth"
+file = "model.pth"
 torch.save(data, file)
 
 print("model saved")
