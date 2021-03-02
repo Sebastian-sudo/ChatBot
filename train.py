@@ -7,6 +7,10 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
+from torch.utils.tensorboard import SummaryWriter
+
+tb = SummaryWriter()
+
 device = torch.device('cuda' if torch.cuda.is_available else 'cpu')
 
 with open('intents.json', 'r') as f:
@@ -68,7 +72,7 @@ model = Net(input_size, hidden_size, output_size).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-for epoch in range(700):
+for epoch in range(1000):
 	for (words, labels) in train_loader:
 		words = words.to(device)
 		labels = labels.to(device)
@@ -80,7 +84,11 @@ for epoch in range(700):
 		loss.backward()
 		optimizer.step()
 
-	if epoch % 100 == 0:
+	if epoch % 25 == 0:
+
+		tb.add_scalar("loss", loss.item(), epoch)
+		tb.add_graph(model, words)
+
 		print(f'epoch {epoch}, loss={loss.item()}')
 
 print(f'loss={loss.item()}')
@@ -98,3 +106,5 @@ file = "model.pth"
 torch.save(data, file)
 
 print("model saved")
+
+tb.close()
